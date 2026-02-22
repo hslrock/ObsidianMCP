@@ -2,6 +2,8 @@
 
 Obsidian vault와 상호작용하는 [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) 서버입니다. Cursor 등 MCP를 지원하는 클라이언트에서 Obsidian 노트·태그·링크·템플릿·폴더 등을 조회·생성·수정할 수 있습니다.
 
+이 프로젝트는 **Python 기반의 MCP 서버**이며, 사람의 개입 없이 **AI만으로 만들어졌습니다**.
+
 ## 요구 사항
 
 - Python 3.11+
