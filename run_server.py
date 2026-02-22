@@ -10,7 +10,7 @@ Usage:
 
 import argparse
 import uvicorn
-from main import app, mcp
+from main import mcp
 
 
 def main():
@@ -38,7 +38,8 @@ def main():
     if args.http:
         print(f"Starting HTTP server on http://{args.host}:{args.port}")
         print(f"API docs available at http://{args.host}:{args.port}/docs")
-        uvicorn.run(app, host=args.host, port=args.port)
+        # FastMCP exposes the FastAPI app via mcp.app
+        uvicorn.run(mcp.app, host=args.host, port=args.port)
     else:
         print("Starting MCP server...")
         mcp.run()

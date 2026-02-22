@@ -1,90 +1,49 @@
 """
-FastAPI MCP Server Example
+Obsidian MCP Server
 
-This server demonstrates how to create an MCP server using FastAPI and FastMCP.
-It includes sample tools, resources, and prompts.
+MCP server for interacting with Obsidian vaults.
+Organized by domain modules for easy extension.
 """
 
+import sys
 from mcp.server import FastMCP
 from pydantic import BaseModel
 import json
 
 # Create FastMCP instance
-mcp = FastMCP("Sample FastAPI MCP Server")
+mcp = FastMCP("Obsidian MCP Server")
 
-class CalculatorRequest(BaseModel):
-    """Request model for calculator operations"""
-    operation: str
-    a: float
-    b: float
-
-
-class EchoRequest(BaseModel):
-    """Request model for echo tool"""
-    message: str
-    repeat: int = 1
-
-
-
-@mcp.tool()
-def calculator(operation: str, a: float, b: float) -> dict:
-    """
-    Perform basic arithmetic operations.
+# Register Obsidian domain tools
+try:
+    from obsidian import (
+        register_note_tools,
+        register_tag_tools,
+        register_link_tools,
+        register_template_tools,
+        register_daily_note_tools,
+        register_statistics_tools,
+        register_folder_tools,
+        register_advanced_search_tools,
+        register_embed_tools,
+        get_vault_path
+    )
     
-    Args:
-        operation: The operation to perform (add, subtract, multiply, divide)
-        a: First number
-        b: Second number
+    # Register all tool modules
+    register_note_tools(mcp)
+    register_tag_tools(mcp)
+    register_link_tools(mcp)
+    register_template_tools(mcp)
+    register_daily_note_tools(mcp)
+    register_statistics_tools(mcp)
+    register_folder_tools(mcp)
+    register_advanced_search_tools(mcp)
+    register_embed_tools(mcp)
     
-    Returns:
-        Dictionary with the result of the operation
-    """
-    operations = {
-        "add": lambda x, y: x + y,
-        "subtract": lambda x, y: x - y,
-        "multiply": lambda x, y: x * y,
-        "divide": lambda x, y: x / y if y != 0 else None
-    }
-    
-    if operation not in operations:
-        return {"error": f"Unknown operation: {operation}. Use: add, subtract, multiply, divide"}
-    
-    if operation == "divide" and b == 0:
-        return {"error": "Cannot divide by zero"}
-    
-    result = operations[operation](a, b)
-    return {
-        "operation": operation,
-        "a": a,
-        "b": b,
-        "result": result
-    }
-
-
-@mcp.tool()
-def echo(message: str, repeat: int = 1) -> dict:
-    """
-    Echo a message multiple times.
-    
-    Args:
-        message: The message to echo
-        repeat: Number of times to repeat the message (default: 1)
-    
-    Returns:
-        Dictionary with the echoed message
-    """
-    if repeat < 1:
-        repeat = 1
-    if repeat > 10:
-        repeat = 10
-    
-    echoed = "\n".join([message] * repeat)
-    return {
-        "message": message,
-        "repeat": repeat,
-        "output": echoed
-    }
-
+except Exception as e:
+    # Print error to stderr so it appears in logs
+    print(f"Error registering Obsidian tools: {e}", file=sys.stderr)
+    sys.stderr.flush()
+    raise
 
 @mcp.tool()
 def get_server_info() -> dict:
@@ -94,11 +53,80 @@ def get_server_info() -> dict:
     Returns:
         Dictionary with server information
     """
+    try:
+        vault_path = get_vault_path()
+        vault_info = {"vault_path": str(vault_path), "exists": True}
+    except Exception as e:
+        vault_info = {"error": str(e)}
+    
     return {
-        "name": "Sample FastAPI MCP Server",
-        "version": "1.0.0",
-        "tools": ["calculator", "echo", "get_server_info"],
-        "resources": ["sample://data"],
+        "name": "Obsidian MCP Server",
+        "version": "3.0.0",
+        "tools": [
+            # Note tools
+            "read_obsidian_note",
+            "create_obsidian_note", 
+            "update_obsidian_note",
+            "list_obsidian_notes",
+            "search_obsidian_notes",
+            # Tag tools
+            "get_note_tags",
+            "search_by_tag",
+            "add_tag_to_note",
+            "remove_tag_from_note",
+            "list_all_tags",
+            # Link tools
+            "get_note_links",
+            "get_backlinks",
+            "create_link_between_notes",
+            "find_orphaned_notes",
+            "find_broken_links",
+            # Template tools
+            "list_templates",
+            "create_note_from_template",
+            "save_template",
+            "get_template",
+            # Daily note tools
+            "create_daily_note",
+            "get_daily_note",
+            "list_daily_notes",
+            # Statistics tools
+            "get_vault_statistics",
+            "get_note_statistics",
+            "find_most_linked_notes",
+            "get_note_graph_data",
+            # Folder tools
+            "create_folder",
+            "move_note",
+            "list_folders",
+            "get_folder_statistics",
+            "delete_folder",
+            # Frontmatter tools
+            "get_note_frontmatter",
+            "update_note_frontmatter",
+            "remove_note_frontmatter",
+            "search_by_frontmatter",
+            # Advanced search tools
+            "search_by_regex",
+            "search_by_date_range",
+            "fuzzy_search_note",
+            "search_by_content_and_metadata",
+            # Bulk operation tools
+            "bulk_update_notes",
+            "bulk_add_tag",
+            "bulk_remove_tag",
+            "bulk_move_notes",
+            "bulk_delete_notes",
+            # Embed and block tools
+            "get_note_blocks",
+            "update_block",
+            "embed_note",
+            "get_note_embeds",
+            "remove_embed",
+            # Server info
+            "get_server_info"
+        ],
+        "vault": vault_info,
         "status": "running"
     }
 
@@ -107,73 +135,26 @@ def get_server_info() -> dict:
 # MCP Resources
 # ============================================================================
 
-@mcp.resource("sample://data")
-def get_sample_data() -> str:
-    """
-    Get sample data resource.
-    
-    Returns:
-        JSON string with sample data
-    """
-    data = {
-        "users": [
-            {"id": 1, "name": "Alice", "role": "admin"},
-            {"id": 2, "name": "Bob", "role": "user"},
-            {"id": 3, "name": "Charlie", "role": "user"}
-        ],
-        "metadata": {
-            "total_users": 3,
-            "last_updated": "2026-02-18"
-        }
-    }
-    return json.dumps(data, indent=2)
-
-
 # ============================================================================
 # MCP Prompts
 # ============================================================================
-
-@mcp.prompt()
-def greeting_prompt(name: str = "User") -> str:
-    """
-    Generate a greeting prompt.
-    
-    Args:
-        name: Name of the person to greet
-    
-    Returns:
-        A greeting message
-    """
-    return f"Hello, {name}! Welcome to the Sample FastAPI MCP Server."
-
-
-@mcp.prompt()
-def help_prompt() -> str:
-    """
-    Generate a help prompt with available tools.
-    
-    Returns:
-        Help message with tool descriptions
-    """
-    return """Available tools:
-1. calculator - Perform arithmetic operations (add, subtract, multiply, divide)
-2. echo - Echo a message multiple times
-3. get_server_info - Get server information
-
-Available resources:
-1. sample://data - Get sample user data
-
-Available prompts:
-1. greeting_prompt - Generate a greeting
-2. help_prompt - Show this help message"""
 
 
 # ============================================================================
 # FastAPI Routes (for HTTP access)
 # ============================================================================
+# Add custom FastAPI routes here if needed
 
 
 if __name__ == "__main__":
     import uvicorn
-    # Run the FastMCP server
-    mcp.run()
+    try:
+        # Print startup message to stderr for debugging
+        print("Starting Obsidian MCP Server...", file=sys.stderr)
+        sys.stderr.flush()
+        # Run the FastMCP server
+        mcp.run()
+    except Exception as e:
+        print(f"Error running MCP server: {e}", file=sys.stderr)
+        sys.stderr.flush()
+        raise
