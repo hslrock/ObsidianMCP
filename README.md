@@ -1,8 +1,39 @@
-# Obsidian MCP
+# Obsidian MCP - Community Edition (HSL)
 
 Obsidian vault와 상호작용하는 [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) 서버입니다. Claude Code, Cursor 등 MCP를 지원하는 클라이언트에서 Obsidian 노트·태그·링크·템플릿·폴더 등을 조회·생성·수정할 수 있습니다.
 
 이 프로젝트는 사람의 개입 없이 **AI만으로 만들어졌으며**, **Python**과 **TypeScript** 두 가지 구현을 제공합니다.
+
+## 빠른 설치 (TypeScript / npm)
+
+```bash
+npm install -g obsidian-mcp-hsl-ce
+```
+
+### Claude Code에서 추가
+
+```bash
+claude mcp add-json obsidian '{"type":"stdio","command":"obsidian-mcp-hsl-ce","args":["~/Documents/Obsidian/MyVault"]}'
+```
+
+### Cursor / 기타 MCP 클라이언트
+
+MCP 설정 파일(JSON)에 추가:
+
+```json
+{
+  "mcpServers": {
+    "obsidian": {
+      "command": "obsidian-mcp-hsl-ce",
+      "args": ["~/Documents/Obsidian/MyVault"]
+    }
+  }
+}
+```
+
+> `args`의 경로를 본인의 Obsidian vault 경로로 변경하세요.
+
+---
 
 ## 프로젝트 구조
 
