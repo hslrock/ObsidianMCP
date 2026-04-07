@@ -1,6 +1,8 @@
+#!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { setVaultPathFromArgs } from "./obsidian/vault.js";
 import {
   getVaultPath,
   registerNoteTools,
@@ -13,6 +15,13 @@ import {
   registerAdvancedSearchTools,
   registerEmbedTools,
 } from "./obsidian/index.js";
+
+// CLI 인자로 vault 경로를 받으면 우선 사용
+// 사용법: obsidian-mcp-kr ~/Documents/Obsidian/MyVault
+const vaultArg = process.argv[2];
+if (vaultArg) {
+  setVaultPathFromArgs(vaultArg);
+}
 
 const server = new McpServer({
   name: "Obsidian MCP Server",

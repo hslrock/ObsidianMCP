@@ -1,13 +1,36 @@
 {
-  "name": "obsidian-mcp-ts",
+  "name": "obsidian-mcp-kr",
   "version": "0.1.0",
-  "description": "MCP server for interacting with Obsidian vaults (TypeScript)",
+  "description": "MCP server for interacting with Obsidian vaults",
   "type": "module",
   "main": "dist/main.js",
+  "bin": {
+    "obsidian-mcp-kr": "dist/main.js"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "npm run build",
     "start": "node dist/main.js",
     "dev": "tsx src/main.ts"
+  },
+  "keywords": [
+    "obsidian",
+    "mcp",
+    "model-context-protocol",
+    "vault",
+    "notes",
+    "cli"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyunseung/ObsidianMCP"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",

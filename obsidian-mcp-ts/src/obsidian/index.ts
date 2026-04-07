@@ -1,4 +1,4 @@
-export { getVaultPath } from "./vault.js";
+export { getVaultPath, setVaultPathFromArgs } from "./vault.js";
 export { registerNoteTools } from "./notes.js";
 export { registerTagTools } from "./tags.js";
 export { registerLinkTools } from "./links.js";

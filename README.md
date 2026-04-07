@@ -73,41 +73,41 @@ uv run python run_server.py --http
 
 ---
 
-## TypeScript 버전
+## TypeScript 버전 (npm 패키지: `obsidian-mcp-kr`)
 
-### 요구 사항
-
-- Node.js 18+
-- npm
-
-### 설치 및 실행
+### 설치
 
 ```bash
+# 글로벌 설치 (권장)
+npm install -g obsidian-mcp-kr
+
+# 또는 소스에서 직접
 cd obsidian-mcp-ts
-
-# 의존성 설치
-npm install
-
-# 환경 변수 설정
-cp .env.example .env
-# .env 파일에서 OBSIDIAN_VAULT_PATH 수정
-
-# 빌드 및 실행
-npm run build
-npm start
-
-# 또는 개발 모드 (빌드 없이)
-npm run dev
+npm install && npm run build
 ```
 
 ### MCP 클라이언트 설정 (Claude Code / Cursor)
+
+글로벌 설치 후 vault 경로만 인자로 넘기면 됩니다:
 
 ```json
 {
   "mcpServers": {
     "obsidian": {
-      "command": "node",
-      "args": ["/path/to/obsidian-mcp-ts/dist/main.js"],
+      "command": "obsidian-mcp-kr",
+      "args": ["~/Documents/Obsidian/MyVault"]
+    }
+  }
+}
+```
+
+환경 변수 방식도 여전히 지원합니다:
+
+```json
+{
+  "mcpServers": {
+    "obsidian": {
+      "command": "obsidian-mcp-kr",
       "env": {
         "OBSIDIAN_VAULT_PATH": "/path/to/your/vault"
       }
@@ -115,6 +115,8 @@ npm run dev
   }
 }
 ```
+
+Vault 경로 우선순위: **CLI 인자** > **환경 변수** > **기본 경로 탐색**
 
 ---
 
