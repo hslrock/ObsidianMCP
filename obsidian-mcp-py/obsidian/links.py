@@ -7,7 +7,7 @@ Provides tools for managing links between notes in Obsidian.
 import re
 from pathlib import Path
 from typing import List, Optional
-from obsidian.vault import get_vault_path
+from obsidian.vault import get_vault_path, safe_path
 
 
 def extract_links(content: str) -> List[str]:
@@ -109,10 +109,10 @@ def register_link_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}", "links": []}
@@ -144,10 +144,10 @@ def register_link_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            target_note_path = vault_path / f"{note_name}.md"
+            target_note_path = safe_path(vault_path, f"{note_name}.md")
             
             if not target_note_path.exists():
-                target_note_path = vault_path / note_name
+                target_note_path = safe_path(vault_path, note_name)
             
             if not target_note_path.exists():
                 return {"error": f"Note not found: {note_name}", "backlinks": []}
@@ -201,10 +201,10 @@ def register_link_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            from_note_path = vault_path / f"{from_note}.md"
+            from_note_path = safe_path(vault_path, f"{from_note}.md")
             
             if not from_note_path.exists():
-                from_note_path = vault_path / from_note
+                from_note_path = safe_path(vault_path, from_note)
             
             if not from_note_path.exists():
                 return {"error": f"Source note not found: {from_note}"}
@@ -256,7 +256,7 @@ def register_link_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             
@@ -312,7 +312,7 @@ def register_link_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             

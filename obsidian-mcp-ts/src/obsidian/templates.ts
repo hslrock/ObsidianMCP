@@ -3,7 +3,7 @@ import path from "path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { getVaultPath } from "./vault.js";
-import { relPath } from "./utils.js";
+import { relPath, safePath } from "./utils.js";
 
 export function getTemplatesFolder(): string {
   const vaultPath = getVaultPath();
@@ -112,11 +112,11 @@ export function registerTemplateTools(server: McpServer) {
 
         let notePath: string;
         if (folder) {
-          const noteDir = path.join(vaultPath, folder);
+          const noteDir = safePath(vaultPath, folder);
           fs.mkdirSync(noteDir, { recursive: true });
           notePath = path.join(noteDir, `${note_name}.md`);
         } else {
-          notePath = path.join(vaultPath, `${note_name}.md`);
+          notePath = safePath(vaultPath, `${note_name}.md`);
         }
 
         if (fs.existsSync(notePath)) {

@@ -7,7 +7,7 @@ Provides tools for managing tags in Obsidian notes.
 import re
 from pathlib import Path
 from typing import List, Optional
-from obsidian.vault import get_vault_path
+from obsidian.vault import get_vault_path, safe_path
 
 
 def extract_tags(content: str) -> List[str]:
@@ -107,10 +107,10 @@ def register_tag_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}", "tags": []}
@@ -143,7 +143,7 @@ def register_tag_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             
@@ -196,10 +196,10 @@ def register_tag_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}"}
@@ -242,10 +242,10 @@ def register_tag_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}"}
@@ -289,7 +289,7 @@ def register_tag_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             

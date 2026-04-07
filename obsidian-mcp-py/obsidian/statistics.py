@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from typing import List, Optional
 from collections import Counter, defaultdict
-from obsidian.vault import get_vault_path
+from obsidian.vault import get_vault_path, safe_path
 from obsidian.tags import extract_tags
 from obsidian.links import extract_links
 
@@ -36,7 +36,7 @@ def register_statistics_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             
@@ -124,10 +124,10 @@ def register_statistics_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}"}
@@ -213,7 +213,7 @@ def register_statistics_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             
@@ -270,9 +270,9 @@ def register_statistics_tools(mcp):
             
             if note_name:
                 # Analyze specific note and its relationships
-                note_path = vault_path / f"{note_name}.md"
+                note_path = safe_path(vault_path, f"{note_name}.md")
                 if not note_path.exists():
-                    note_path = vault_path / note_name
+                    note_path = safe_path(vault_path, note_name)
                 
                 if not note_path.exists():
                     return {"error": f"Note not found: {note_name}"}

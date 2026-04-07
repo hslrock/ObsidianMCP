@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Optional, Dict
 from datetime import datetime
 import re
-from obsidian.vault import get_vault_path
+from obsidian.vault import get_vault_path, safe_path
 
 
 def get_templates_folder() -> Path:
@@ -152,11 +152,11 @@ def register_template_tools(mcp):
             
             # Create note
             if folder:
-                note_dir = vault_path / folder
+                note_dir = safe_path(vault_path, folder)
                 note_dir.mkdir(parents=True, exist_ok=True)
                 note_path = note_dir / f"{note_name}.md"
             else:
-                note_path = vault_path / f"{note_name}.md"
+                note_path = safe_path(vault_path, f"{note_name}.md")
             
             if note_path.exists():
                 return {"error": f"Note already exists: {note_name}"}

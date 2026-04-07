@@ -6,7 +6,7 @@ Provides tools for managing folders in the vault.
 
 from pathlib import Path
 from typing import Optional, List
-from obsidian.vault import get_vault_path
+from obsidian.vault import get_vault_path, safe_path
 
 
 def register_folder_tools(mcp):
@@ -30,7 +30,7 @@ def register_folder_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            new_folder = vault_path / folder_path
+            new_folder = safe_path(vault_path, folder_path)
             
             if new_folder.exists():
                 return {
@@ -66,15 +66,15 @@ def register_folder_tools(mcp):
             vault_path = get_vault_path()
             
             # Find source note
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}"}
             
             # Create destination folder if needed
-            dest_folder = vault_path / new_folder
+            dest_folder = safe_path(vault_path, new_folder)
             dest_folder.mkdir(parents=True, exist_ok=True)
             
             # Move note
@@ -110,7 +110,7 @@ def register_folder_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             
@@ -153,7 +153,7 @@ def register_folder_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            folder_path = vault_path / folder
+            folder_path = safe_path(vault_path, folder)
             
             if not folder_path.exists():
                 return {"error": f"Folder not found: {folder}"}
@@ -219,7 +219,7 @@ def register_folder_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            folder = vault_path / folder_path
+            folder = safe_path(vault_path, folder_path)
             
             if not folder.exists():
                 return {"error": f"Folder not found: {folder_path}"}

@@ -3,7 +3,7 @@ import path from "path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { getVaultPath } from "./vault.js";
-import { findMarkdownFiles, resolveNotePath, relPath, stem } from "./utils.js";
+import { findMarkdownFiles, resolveNotePath, relPath, stem, safePath } from "./utils.js";
 
 function findAllDirs(dir: string, vaultPath: string): string[] {
   const results: string[] = [];
@@ -31,7 +31,7 @@ export function registerFolderTools(server: McpServer) {
     async ({ folder_path }) => {
       try {
         const vaultPath = getVaultPath();
-        const newFolder = path.join(vaultPath, folder_path);
+        const newFolder = safePath(vaultPath, folder_path);
 
         if (fs.existsSync(newFolder)) {
           return { content: [{ type: "text" as const, text: JSON.stringify({ success: true, message: `Folder already exists: ${folder_path}`, folder_path }) }] };
@@ -58,7 +58,7 @@ export function registerFolderTools(server: McpServer) {
         const notePath = resolveNotePath(vaultPath, note_name);
         if (!notePath) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Note not found: ${note_name}` }) }] };
 
-        const destFolder = path.join(vaultPath, new_folder);
+        const destFolder = safePath(vaultPath, new_folder);
         fs.mkdirSync(destFolder, { recursive: true });
 
         const destPath = path.join(destFolder, path.basename(notePath));
@@ -86,7 +86,7 @@ export function registerFolderTools(server: McpServer) {
     async ({ folder }) => {
       try {
         const vaultPath = getVaultPath();
-        const searchPath = folder ? path.join(vaultPath, folder) : vaultPath;
+        const searchPath = folder ? safePath(vaultPath, folder) : vaultPath;
         if (!fs.existsSync(searchPath)) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Folder not found: ${folder}`, folders: [] }) }] };
 
         const folders = findAllDirs(searchPath, vaultPath);
@@ -107,7 +107,7 @@ export function registerFolderTools(server: McpServer) {
     async ({ folder }) => {
       try {
         const vaultPath = getVaultPath();
-        const folderPath = path.join(vaultPath, folder);
+        const folderPath = safePath(vaultPath, folder);
 
         if (!fs.existsSync(folderPath)) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Folder not found: ${folder}` }) }] };
         if (!fs.statSync(folderPath).isDirectory()) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Path is not a folder: ${folder}` }) }] };
@@ -165,7 +165,7 @@ export function registerFolderTools(server: McpServer) {
     async ({ folder_path, force }) => {
       try {
         const vaultPath = getVaultPath();
-        const folderFull = path.join(vaultPath, folder_path);
+        const folderFull = safePath(vaultPath, folder_path);
 
         if (!fs.existsSync(folderFull)) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Folder not found: ${folder_path}` }) }] };
         if (!fs.statSync(folderFull).isDirectory()) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Path is not a folder: ${folder_path}` }) }] };

@@ -3,7 +3,7 @@ import path from "path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { getVaultPath } from "./vault.js";
-import { findMarkdownFiles, resolveNotePath, relPath, stem } from "./utils.js";
+import { findMarkdownFiles, resolveNotePath, relPath, stem, safePath } from "./utils.js";
 import { extractTags } from "./tags.js";
 import { extractLinks } from "./links.js";
 
@@ -22,7 +22,7 @@ export function registerStatisticsTools(server: McpServer) {
     async ({ folder }) => {
       try {
         const vaultPath = getVaultPath();
-        const searchPath = folder ? path.join(vaultPath, folder) : vaultPath;
+        const searchPath = folder ? safePath(vaultPath, folder) : vaultPath;
         if (!fs.existsSync(searchPath)) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Folder not found: ${folder}` }) }] };
 
         let totalNotes = 0, totalSize = 0, totalLines = 0;
@@ -141,7 +141,7 @@ export function registerStatisticsTools(server: McpServer) {
     async ({ limit, folder }) => {
       try {
         const vaultPath = getVaultPath();
-        const searchPath = folder ? path.join(vaultPath, folder) : vaultPath;
+        const searchPath = folder ? safePath(vaultPath, folder) : vaultPath;
         if (!fs.existsSync(searchPath)) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Folder not found: ${folder}`, notes: [] }) }] };
 
         const linkCounts: Record<string, number> = {};

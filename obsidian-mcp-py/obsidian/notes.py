@@ -6,7 +6,7 @@ Provides tools for creating, reading, updating, listing, and searching notes.
 
 from pathlib import Path
 from typing import Optional
-from obsidian.vault import get_vault_path
+from obsidian.vault import get_vault_path, safe_path
 
 
 def register_note_tools(mcp):
@@ -30,11 +30,11 @@ def register_note_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             
             # If not found, try as relative path
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 # Try to find similar note names
@@ -85,11 +85,11 @@ def register_note_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                note_dir = vault_path / folder
+                note_dir = safe_path(vault_path, folder)
                 note_dir.mkdir(parents=True, exist_ok=True)
                 note_path = note_dir / f"{note_name}.md"
             else:
-                note_path = vault_path / f"{note_name}.md"
+                note_path = safe_path(vault_path, f"{note_name}.md")
             
             if note_path.exists():
                 return {"error": f"Note already exists: {note_name}"}
@@ -121,10 +121,10 @@ def register_note_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}"}
@@ -163,7 +163,7 @@ def register_note_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             
@@ -211,7 +211,7 @@ def register_note_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             

@@ -3,7 +3,7 @@ import path from "path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { getVaultPath } from "./vault.js";
-import { findMarkdownFiles, relPath, stem } from "./utils.js";
+import { findMarkdownFiles, relPath, stem, safePath } from "./utils.js";
 
 function fuzzyMatch(query: string, text: string): boolean {
   const qLower = query.toLowerCase();
@@ -26,7 +26,7 @@ export function registerAdvancedSearchTools(server: McpServer) {
     async ({ pattern, folder }) => {
       try {
         const vaultPath = getVaultPath();
-        const searchPath = folder ? path.join(vaultPath, folder) : vaultPath;
+        const searchPath = folder ? safePath(vaultPath, folder) : vaultPath;
         if (!fs.existsSync(searchPath)) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Folder not found: ${folder}`, matches: [] }) }] };
 
         let regex: RegExp;
@@ -84,7 +84,7 @@ export function registerAdvancedSearchTools(server: McpServer) {
     async ({ start_date, end_date, folder }) => {
       try {
         const vaultPath = getVaultPath();
-        const searchPath = folder ? path.join(vaultPath, folder) : vaultPath;
+        const searchPath = folder ? safePath(vaultPath, folder) : vaultPath;
         if (!fs.existsSync(searchPath)) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Folder not found: ${folder}`, matches: [] }) }] };
 
         const start = new Date(start_date + "T00:00:00");
@@ -134,7 +134,7 @@ export function registerAdvancedSearchTools(server: McpServer) {
     async ({ query, folder, limit }) => {
       try {
         const vaultPath = getVaultPath();
-        const searchPath = folder ? path.join(vaultPath, folder) : vaultPath;
+        const searchPath = folder ? safePath(vaultPath, folder) : vaultPath;
         if (!fs.existsSync(searchPath)) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Folder not found: ${folder}`, matches: [] }) }] };
 
         const matches: any[] = [];

@@ -7,7 +7,7 @@ Provides tools for managing note embeds and block-level operations.
 import re
 from pathlib import Path
 from typing import Optional, List, Dict, Any
-from obsidian.vault import get_vault_path
+from obsidian.vault import get_vault_path, safe_path
 
 
 def extract_blocks(content: str) -> List[Dict[str, Any]]:
@@ -157,10 +157,10 @@ def register_embed_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}"}
@@ -199,10 +199,10 @@ def register_embed_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}"}
@@ -254,18 +254,18 @@ def register_embed_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            target_path = vault_path / f"{target_note}.md"
+            target_path = safe_path(vault_path, f"{target_note}.md")
             
             if not target_path.exists():
-                target_path = vault_path / target_note
+                target_path = safe_path(vault_path, target_note)
             
             if not target_path.exists():
                 return {"error": f"Target note not found: {target_note}"}
             
             # Check if source note exists
-            source_path = vault_path / f"{source_note}.md"
+            source_path = safe_path(vault_path, f"{source_note}.md")
             if not source_path.exists():
-                source_path = vault_path / source_note
+                source_path = safe_path(vault_path, source_note)
             
             if not source_path.exists():
                 return {"error": f"Source note not found: {source_note}"}
@@ -317,10 +317,10 @@ def register_embed_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            note_path = vault_path / f"{note_name}.md"
+            note_path = safe_path(vault_path, f"{note_name}.md")
             
             if not note_path.exists():
-                note_path = vault_path / note_name
+                note_path = safe_path(vault_path, note_name)
             
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}"}
@@ -352,10 +352,10 @@ def register_embed_tools(mcp):
         """
         try:
             vault_path = get_vault_path()
-            target_path = vault_path / f"{target_note}.md"
+            target_path = safe_path(vault_path, f"{target_note}.md")
             
             if not target_path.exists():
-                target_path = vault_path / target_note
+                target_path = safe_path(vault_path, target_note)
             
             if not target_path.exists():
                 return {"error": f"Target note not found: {target_note}"}

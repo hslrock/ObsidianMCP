@@ -3,7 +3,7 @@ import path from "path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { getVaultPath } from "./vault.js";
-import { findMarkdownFiles, resolveNotePath, relPath, stem } from "./utils.js";
+import { findMarkdownFiles, resolveNotePath, relPath, stem, safePath } from "./utils.js";
 
 export function extractTags(content: string): string[] {
   const tags = new Set<string>();
@@ -66,7 +66,7 @@ export function registerTagTools(server: McpServer) {
     async ({ tag, folder }) => {
       try {
         const vaultPath = getVaultPath();
-        const searchPath = folder ? path.join(vaultPath, folder) : vaultPath;
+        const searchPath = folder ? safePath(vaultPath, folder) : vaultPath;
         if (!fs.existsSync(searchPath)) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Folder not found: ${folder}`, matches: [] }) }] };
 
         const tagLower = tag.toLowerCase();
@@ -152,7 +152,7 @@ export function registerTagTools(server: McpServer) {
     async ({ folder }) => {
       try {
         const vaultPath = getVaultPath();
-        const searchPath = folder ? path.join(vaultPath, folder) : vaultPath;
+        const searchPath = folder ? safePath(vaultPath, folder) : vaultPath;
         if (!fs.existsSync(searchPath)) return { content: [{ type: "text" as const, text: JSON.stringify({ error: `Folder not found: ${folder}`, tags: [] }) }] };
 
         const tagCounts: Record<string, number> = {};

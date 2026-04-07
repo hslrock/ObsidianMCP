@@ -3,7 +3,7 @@ import path from "path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import { getVaultPath } from "./vault.js";
-import { findMarkdownFiles, resolveNotePath, relPath, stem } from "./utils.js";
+import { findMarkdownFiles, resolveNotePath, relPath, stem, safePath } from "./utils.js";
 
 export function registerNoteTools(server: McpServer) {
   server.tool(
@@ -59,11 +59,11 @@ export function registerNoteTools(server: McpServer) {
         let notePath: string;
 
         if (folder) {
-          const noteDir = path.join(vaultPath, folder);
+          const noteDir = safePath(vaultPath, folder);
           fs.mkdirSync(noteDir, { recursive: true });
           notePath = path.join(noteDir, `${note_name}.md`);
         } else {
-          notePath = path.join(vaultPath, `${note_name}.md`);
+          notePath = safePath(vaultPath, `${note_name}.md`);
         }
 
         if (fs.existsSync(notePath)) {
@@ -134,7 +134,7 @@ export function registerNoteTools(server: McpServer) {
     async ({ folder }) => {
       try {
         const vaultPath = getVaultPath();
-        const searchPath = folder ? path.join(vaultPath, folder) : vaultPath;
+        const searchPath = folder ? safePath(vaultPath, folder) : vaultPath;
 
         if (!fs.existsSync(searchPath)) {
           return { content: [{ type: "text", text: JSON.stringify({ error: `Folder not found: ${folder}`, notes: [] }) }] };
@@ -170,7 +170,7 @@ export function registerNoteTools(server: McpServer) {
     async ({ query, folder }) => {
       try {
         const vaultPath = getVaultPath();
-        const searchPath = folder ? path.join(vaultPath, folder) : vaultPath;
+        const searchPath = folder ? safePath(vaultPath, folder) : vaultPath;
 
         if (!fs.existsSync(searchPath)) {
           return { content: [{ type: "text", text: JSON.stringify({ error: `Folder not found: ${folder}`, matches: [] }) }] };

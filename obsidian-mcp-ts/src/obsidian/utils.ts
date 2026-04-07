@@ -27,18 +27,39 @@ export function findMarkdownFiles(dir: string): string[] {
   return results;
 }
 
+/**
+ * Validate that a resolved path is inside the vault.
+ * Prevents path traversal attacks (e.g. ../../etc/passwd).
+ */
+export function assertInsideVault(vaultPath: string, targetPath: string): void {
+  const resolved = path.resolve(targetPath);
+  const vault = path.resolve(vaultPath);
+  if (!resolved.startsWith(vault + path.sep) && resolved !== vault) {
+    throw new Error(`Access denied: path is outside the vault`);
+  }
+}
+
 /** Resolve a note name to an absolute path. Returns undefined if not found. */
 export function resolveNotePath(
   vaultPath: string,
   noteName: string
 ): string | undefined {
   const withExt = path.join(vaultPath, `${noteName}.md`);
+  assertInsideVault(vaultPath, withExt);
   if (fs.existsSync(withExt)) return withExt;
 
   const asIs = path.join(vaultPath, noteName);
+  assertInsideVault(vaultPath, asIs);
   if (fs.existsSync(asIs)) return asIs;
 
   return undefined;
+}
+
+/** Safely join a path inside the vault, with traversal check. */
+export function safePath(vaultPath: string, ...segments: string[]): string {
+  const result = path.join(vaultPath, ...segments);
+  assertInsideVault(vaultPath, result);
+  return result;
 }
 
 /** Get relative path from vault root. */

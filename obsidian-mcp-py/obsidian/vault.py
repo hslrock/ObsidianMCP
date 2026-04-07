@@ -43,5 +43,19 @@ def get_vault_path() -> Path:
     
     if not vault_path.exists():
         raise ValueError(f"Obsidian vault path does not exist: {vault_path}")
-    
+
     return vault_path
+
+
+def safe_path(vault_path: Path, *segments: str) -> Path:
+    """
+    Safely join path segments under the vault, preventing path traversal attacks.
+
+    Raises:
+        ValueError: If the resolved path escapes the vault directory
+    """
+    result = (vault_path / Path(*segments)).resolve()
+    vault_resolved = vault_path.resolve()
+    if not (result == vault_resolved or str(result).startswith(str(vault_resolved) + "/")):
+        raise ValueError("Access denied: path is outside the vault")
+    return result

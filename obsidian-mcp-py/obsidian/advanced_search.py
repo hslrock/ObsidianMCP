@@ -8,7 +8,7 @@ import re
 from pathlib import Path
 from typing import Optional, List, Dict
 from datetime import datetime
-from obsidian.vault import get_vault_path
+from obsidian.vault import get_vault_path, safe_path
 
 
 def fuzzy_match(query: str, text: str) -> bool:
@@ -57,7 +57,7 @@ def register_advanced_search_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             
@@ -126,7 +126,7 @@ def register_advanced_search_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             
@@ -195,7 +195,7 @@ def register_advanced_search_tools(mcp):
             vault_path = get_vault_path()
             
             if folder:
-                search_path = vault_path / folder
+                search_path = safe_path(vault_path, folder)
             else:
                 search_path = vault_path
             
