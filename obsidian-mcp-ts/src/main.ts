@@ -17,7 +17,7 @@ import {
 } from "./obsidian/index.js";
 
 // CLI 인자로 vault 경로를 받으면 우선 사용
-// 사용법: obsidian-mcp-kr ~/Documents/Obsidian/MyVault
+// 사용법: obsidian-mcp-hsl-ce ~/Documents/Obsidian/MyVault
 const vaultArg = process.argv[2];
 if (vaultArg) {
   setVaultPathFromArgs(vaultArg);

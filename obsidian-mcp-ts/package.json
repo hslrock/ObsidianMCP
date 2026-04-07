@@ -1,11 +1,11 @@
 {
-  "name": "obsidian-mcp-kr",
+  "name": "obsidian-mcp-hsl-ce",
   "version": "0.1.0",
-  "description": "MCP server for interacting with Obsidian vaults",
+  "description": "Obsidian MCP Server - Community Edition by HSL",
   "type": "module",
   "main": "dist/main.js",
   "bin": {
-    "obsidian-mcp-kr": "dist/main.js"
+    "obsidian-mcp-hsl-ce": "dist/main.js"
   },
   "files": [
     "dist"

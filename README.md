@@ -73,13 +73,13 @@ uv run python run_server.py --http
 
 ---
 
-## TypeScript 버전 (npm 패키지: `obsidian-mcp-kr`)
+## TypeScript 버전 (npm: `obsidian-mcp-hsl-ce`) - Community Edition
 
 ### 설치
 
 ```bash
 # 글로벌 설치 (권장)
-npm install -g obsidian-mcp-kr
+npm install -g obsidian-mcp-hsl-ce
 
 # 또는 소스에서 직접
 cd obsidian-mcp-ts
@@ -94,7 +94,7 @@ npm install && npm run build
 {
   "mcpServers": {
     "obsidian": {
-      "command": "obsidian-mcp-kr",
+      "command": "obsidian-mcp-hsl-ce",
       "args": ["~/Documents/Obsidian/MyVault"]
     }
   }
@@ -107,7 +107,7 @@ npm install && npm run build
 {
   "mcpServers": {
     "obsidian": {
-      "command": "obsidian-mcp-kr",
+      "command": "obsidian-mcp-hsl-ce",
       "env": {
         "OBSIDIAN_VAULT_PATH": "/path/to/your/vault"
       }
