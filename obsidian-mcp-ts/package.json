@@ -1,6 +1,6 @@
 {
   "name": "obsidian-mcp-hsl-ce",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Obsidian MCP Server - Community Edition by HSL",
   "type": "module",
   "main": "dist/main.js",
