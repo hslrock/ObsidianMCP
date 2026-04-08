@@ -120,6 +120,9 @@ uv run python run_server.py --http
 # 글로벌 설치 (권장)
 npm install -g obsidian-mcp-hsl-ce
 
+# 또는 설치 없이 npx로 실행
+npx -y obsidian-mcp-hsl-ce ~/Documents/Obsidian/MyVault
+
 # 또는 소스에서 직접
 cd obsidian-mcp-ts
 npm install && npm run build
