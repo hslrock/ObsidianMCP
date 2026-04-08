@@ -85,13 +85,14 @@ export function registerNoteTools(server: McpServer) {
 
   server.tool(
     "update_obsidian_note",
-    "Update an existing note in Obsidian vault",
+    "Update an existing note in Obsidian vault. Supports partial patch (old_text→new_text) and insert (top/bottom).",
     {
       note_name: z.string().describe("Name of the note (without .md extension) or relative path"),
-      content: z.string().describe("New content or content to append"),
-      append: z.boolean().default(false).describe("If true, append to existing content; if false, replace"),
+      old_text: z.string().optional().describe("Text to find and replace (for patch mode)"),
+      new_text: z.string().optional().describe("Replacement text (for patch mode) or content to insert"),
+      insert_position: z.enum(["top", "bottom"]).optional().describe("Insert new_text at top or bottom of note (omit for patch mode)"),
     },
-    async ({ note_name, content, append }) => {
+    async ({ note_name, old_text, new_text, insert_position }) => {
       try {
         const vaultPath = getVaultPath();
         const notePath = resolveNotePath(vaultPath, note_name);
@@ -100,15 +101,35 @@ export function registerNoteTools(server: McpServer) {
           return { content: [{ type: "text", text: JSON.stringify({ error: `Note not found: ${note_name}` }) }] };
         }
 
+        const existing = fs.readFileSync(notePath, "utf-8");
         let newContent: string;
-        if (append) {
-          const existing = fs.readFileSync(notePath, "utf-8");
-          newContent = existing + "\n\n" + content;
+        let mode: string;
+
+        if (insert_position) {
+          // Insert mode: add new_text at top or bottom
+          if (!new_text) {
+            return { content: [{ type: "text", text: JSON.stringify({ error: "new_text is required for insert mode" }) }] };
+          }
+          newContent = insert_position === "top"
+            ? new_text + "\n\n" + existing
+            : existing + "\n\n" + new_text;
+          mode = `insert_${insert_position}`;
+        } else if (old_text !== undefined) {
+          // Patch mode: find and replace
+          if (new_text === undefined) {
+            return { content: [{ type: "text", text: JSON.stringify({ error: "new_text is required for patch mode" }) }] };
+          }
+          if (!existing.includes(old_text)) {
+            return { content: [{ type: "text", text: JSON.stringify({ error: "old_text not found in note", note_name: stem(notePath) }) }] };
+          }
+          newContent = existing.replace(old_text, new_text);
+          mode = "patch";
         } else {
-          newContent = content;
+          return { content: [{ type: "text", text: JSON.stringify({ error: "Provide old_text+new_text (patch) or insert_position+new_text (insert)" }) }] };
         }
 
         fs.writeFileSync(notePath, newContent, "utf-8");
+        const diff = newContent.length - existing.length;
         return {
           content: [{
             type: "text",
@@ -116,8 +137,10 @@ export function registerNoteTools(server: McpServer) {
               success: true,
               note_name: stem(notePath),
               path: relPath(vaultPath, notePath),
-              size: newContent.length,
-              appended: append,
+              mode,
+              chars_before: existing.length,
+              chars_after: newContent.length,
+              chars_diff: diff >= 0 ? `+${diff}` : `${diff}`,
             }),
           }],
         };

@@ -107,42 +107,67 @@ def register_note_tools(mcp):
     
     
     @mcp.tool()
-    def update_obsidian_note(note_name: str, content: str, append: bool = False) -> dict:
+    def update_obsidian_note(
+        note_name: str,
+        old_text: Optional[str] = None,
+        new_text: Optional[str] = None,
+        insert_position: Optional[str] = None,
+    ) -> dict:
         """
-        Update an existing note in Obsidian vault.
-        
+        Update an existing note in Obsidian vault. Supports partial patch (old_text→new_text) and insert (top/bottom).
+
         Args:
             note_name: Name of the note (without .md extension) or relative path
-            content: New content or content to append
-            append: If True, append to existing content; if False, replace content
-        
+            old_text: Text to find and replace (for patch mode)
+            new_text: Replacement text (for patch mode) or content to insert
+            insert_position: Insert new_text at "top" or "bottom" of note (omit for patch mode)
+
         Returns:
             Dictionary with update status
         """
         try:
             vault_path = get_vault_path()
             note_path = safe_path(vault_path, f"{note_name}.md")
-            
+
             if not note_path.exists():
                 note_path = safe_path(vault_path, note_name)
-            
+
             if not note_path.exists():
                 return {"error": f"Note not found: {note_name}"}
-            
-            if append:
-                existing_content = note_path.read_text(encoding="utf-8")
-                new_content = existing_content + "\n\n" + content
+
+            existing = note_path.read_text(encoding="utf-8")
+
+            if insert_position:
+                if not new_text:
+                    return {"error": "new_text is required for insert mode"}
+                if insert_position == "top":
+                    new_content = new_text + "\n\n" + existing
+                elif insert_position == "bottom":
+                    new_content = existing + "\n\n" + new_text
+                else:
+                    return {"error": "insert_position must be 'top' or 'bottom'"}
+                mode = f"insert_{insert_position}"
+            elif old_text is not None:
+                if new_text is None:
+                    return {"error": "new_text is required for patch mode"}
+                if old_text not in existing:
+                    return {"error": "old_text not found in note", "note_name": note_path.stem}
+                new_content = existing.replace(old_text, new_text, 1)
+                mode = "patch"
             else:
-                new_content = content
-            
+                return {"error": "Provide old_text+new_text (patch) or insert_position+new_text (insert)"}
+
             note_path.write_text(new_content, encoding="utf-8")
-            
+            diff = len(new_content) - len(existing)
+
             return {
                 "success": True,
                 "note_name": note_path.stem,
                 "path": str(note_path.relative_to(vault_path)),
-                "size": len(new_content),
-                "appended": append
+                "mode": mode,
+                "chars_before": len(existing),
+                "chars_after": len(new_content),
+                "chars_diff": f"+{diff}" if diff >= 0 else str(diff),
             }
         except Exception as e:
             return {"error": str(e)}
