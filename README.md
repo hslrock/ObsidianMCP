@@ -16,6 +16,14 @@ npm install -g obsidian-mcp-hsl-ce
 claude mcp add-json obsidian '{"type":"stdio","command":"obsidian-mcp-hsl-ce","args":["~/Documents/Obsidian/MyVault"]}'
 ```
 
+### 설치 없이 사용 (npx)
+
+글로벌 설치 없이 `npx`로 필요할 때마다 자동으로 가져와서 실행할 수도 있습니다:
+
+```bash
+claude mcp add-json obsidian '{"type":"stdio","command":"npx","args":["-y","obsidian-mcp-hsl-ce","~/Documents/Obsidian/MyVault"]}'
+```
+
 ### Cursor / 기타 MCP 클라이언트
 
 MCP 설정 파일(JSON)에 추가:
