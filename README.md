@@ -143,6 +143,19 @@ npm install && npm run build
 }
 ```
 
+npx를 사용하면 글로벌 설치 없이도 사용할 수 있습니다:
+
+```json
+{
+  "mcpServers": {
+    "obsidian": {
+      "command": "npx",
+      "args": ["-y", "obsidian-mcp-hsl-ce", "~/Documents/Obsidian/MyVault"]
+    }
+  }
+}
+```
+
 환경 변수 방식도 여전히 지원합니다:
 
 ```json
